@@ -1,0 +1,204 @@
+# Linux Important Commands
+
+## rx and tx pkts in linux
+
+- RX and TX are Receive and Transmit (not transfer) i.e., **traffic sent to this host (RX on its network interface)** and **sent from this host (TX on its network interface)**, respectively.
+- In the below example, that network interface has received much more data than it has transmitted.
+
+    RX packets:60451021996 errors:0 dropped:0 overruns:0 frame:0
+    TX packets:158501574 errors:0 dropped:0 overruns:0 carrier:0
+    collisions:0 txqueuelen:5000
+    RX bytes:12508573129969 (11.3 TiB)  TX bytes:220148785267 (205.0 GiB)
+
+## ethtool
+
+- Ethtool is a Network Interface Card configuration command that allows you to retrieve information and change your NIC settings. These settings include Speed, Duplex, Auto-Negotiation, and many other parameters.
+
+- Ethtool Command to Change Ethernet Adapter Settings is:
+- sudo ethtool -s [device_name] speed [10/100/1000] duplex [half/full] autoneg [on/off]
+
+- Setting pause parameters using ethtool command.
+- Pause parameters are Rx and Tx.
+<!-- - We can't modify pause parameters **when Autonegotiate is on** so if we have to change the state of pause parameters we have to turn off Autonegotiate parameter. -->
+- If autonegotiate is off then flow control will remain as it was earlier. Like if it was enabled then it will be enabled and if it was disabled it will be disabled.
+- cmd : ethtool -A ifc rx on/off tx on/off autoneg on/off
+  
+- When autoneg is on
+- ethtool -A lan rx off tx off autoneg off
+- ethtool -A lan rx on tx off autoneg off
+- ethtool -A lan rx off tx on autoneg off
+- ethtool -A lan rx on tx on autoneg off
+  
+- When autoneg is off
+- ethtool -A lan rx on tx on autoneg on
+- ethtool -A lan rx off tx on autoneg on
+- ethtool -A lan rx on tx off autoneg on
+
+- Pause parameter should be (autonegotiate: on, rx off, tx off) disabled on ANAP/linux and if pause parameters are enabled/on the flow control messages will appear in kernel log which will slow down the transmission and if pause parameters are disabled then flow control is disabled and flow control messages are not appeared in kernel logs.
+
+- **In kernel logs (on ANAP)**
+  
+- When pause parameters are on:
+- e1000: lan NIC Link is Up 1000 Mbps Full Duplex, Flow Control: RX
+- IPv6: ADDRCONF(NETDEV_CHANGE): lan: link becomes ready
+
+- When pause paramters are off:
+- e1000: lan NIC Link is Up 1000 Mbps Full Duplex, Flow Control: None
+- e1000: m2 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: None
+
+- Ethernet driver settings:
+- ethtool -i ifc
+- ethtool -i eth0
+
+- Ethernet device properties:
+- ethtool ifc
+- ethtool eth0
+
+- Pause Parameters:
+- ethtool -a ifc
+- ethtool -a eth0
+
+## Command to create symlink (Synbolic link)
+
+- ln -s existing_source_file optional_symbolic_link
+  -s option is used for symbolic link
+
+## iperf
+
+[DESCRIPTION]
+    iperf is a tool for performing network throughput measurements. It can test either TCP or UDP throughput. To perform an iperf test the user must establish both a server (to discard traffic) and a client (to generate traffic).
+
+      iperf -s [ options ]                       <!-- TCP Server -->
+      iperf -c server [ options ]                <!-- TCP Client -->
+      iperf -u -s [ options ]                    <!-- UDP Server -->
+      iperf -u -c server [ options ]             <!-- UDP Client -->
+
+GENERAL OPTIONS
+    -f, --format
+          [kmKM]   format to report: Kbits, Mbits, KBytes, MBytes
+    -h, --help
+          print a help synopsis
+    -i, --interval n
+          pause n seconds between periodic bandwidth reports
+    -l, --len n[KM]
+          set length read/write buffer to n (default 8 KB)
+    -m, --print_mss
+          print TCP maximum segment size (MTU - TCP/IP header)
+
+    -o, --output <filename>
+          output the report or error message to this specified file
+    -p, --port n
+          set server port to listen on/connect to to n (default 5001)
+    -u, --udp
+          use UDP rather than TCP
+    -w, --window n[KM]
+          TCP window size (socket buffer size)
+    -B, --bind <host>
+          bind to <host>, an interface or multicast address
+
+    -C, --compatibility
+          for use with older versions does not sent extra msgs
+    -M, --mss n
+          set TCP maximum segment size (MTU - 40 bytes)
+    -N, --nodelay
+          set TCP no delay, disabling Nagle’s Algorithm
+    -v, --version
+          print version information and quit
+    -V, --IPv6Version
+          Set the domain to IPv6
+    -x, --reportexclude
+          [CDMSV]   exclude C(connection) D(data) M(multicast) S(settings) V(server) reports
+    -y, --reportstyle C|c
+          if set to C or c report results as CSV (comma separated values)
+
+SERVER SPECIFIC OPTIONS
+    -s, --server
+          run in server mode
+    -U, --single_udp
+          run in single threaded UDP mode
+    -D, --daemon
+          run the server as a daemon
+
+CLIENT SPECIFIC OPTIONS
+    -b, --bandwidth n[KM]
+          set target bandwidth to n bits/sec (default 1 Mbit/sec).  This setting requires UDP (-u).
+
+    -c, --client <host>
+          run in client mode, connecting to <host>
+    -d, --dualtest
+          Do a bidirectional test simultaneously
+    -n, --num n[KM]
+          number of bytes to transmit (instead of -t)
+    -r, --tradeoff
+          Do a bidirectional test individually
+    -t, --time n
+          time in seconds to transmit for (default 10 secs)
+          
+    -F, --fileinput <name>
+          input the data to be transmitted from a file
+    -I, --stdin
+          input the data to be transmitted from stdin
+    -L, --listenport n
+          port to recieve bidirectional tests back on
+    -P, --parallel n
+          number of parallel client threads to run
+    -T, --ttl n
+          time-to-live, for multicast (default 1)
+    -Z, --linux-congestion <algo>
+          set TCP congestion control algorithm (Linux only)
+
+## Mount command
+
+## Command to check linux machine details
+
+uname -a
+uname -r
+
+- command to check disk fragmentation
+- df -h
+- command to check disk fragmentation for each directory/file in the current directory (disk used by file/directory in current directory).
+- du -hs * | sort -rh | head -5
+
+## Command to generate a random file for specific size
+
+1st Way : fallocate -l file_size file_name
+ex - fallocate -l 10M test_10M.txt
+
+2nd Way : xfs_mkfile file_size file_name
+ex - xfs_mkfile 10M daygeek5.txt
+
+## grep filter
+
+syntax - grep '<text_to_be_searched>' <file/files>
+
+- -n : list line numbers
+- -c : count total matched occurances
+- -i : ignore the case
+- -v : invert match (prints the line that does not contain matching pattern)
+- -l : prints the file names that match a pattern
+- -A x : print x lines after the occurance.
+- -B x : print x lines before the occurance.
+
+- -R : recursive search (By default, grep cannot search directories. If you try doing so, you'll get an error ("Is a directory"). With option -R, searching files within directories and subdirectories becomes possible)
+
+- Performing search for multiple string.
+- Passing command as a input for grep command:
+- syntax- grep -f <(command)
+- ex : grep -f <(date +%H%M), ls /var/aryaka/stats/anap/ | grep -f <(date +%H%M).
+
+## Command to generate ekey
+
+1) openssl base64 -A -in plantext.txt -out 64_encode.txt
+2) openssl enc -e -aes-256-cbc -md sha256 -a -A -salt -pass pass:somepassword -in 64_encode.txt -out ciphertxt.txt
+
+## Pass any command as an input to the other command
+
+- <linux_cli> <cmd_options> $(<cli_2>)
+- cli_2 : command whose output you want to pass as an input
+- linux_cli : command in which you want to pass cli_2 as an input
+- cmd_options : options related to linux_cli
+
+## Add path to the PATH variable in linux
+
+- [https://linuxize.com/post/how-to-add-directory-to-path-in-linux/]
+  
