@@ -1,0 +1,28 @@
+# Common Errors
+
+1. PYCURL ERROR 6 - Couldn't resolve host
+
+    common-reason :
+    Either name resolution is broken or yum is configured (via yum.conf) to use an http proxy server and the proxy server is broken.
+
+    solution :
+    Check the /etc/resolv.conf file and check which ip is configured as DNS server -
+    [+] if it is some known name server verify whether that name server is pingable (reachable) from the machine.
+    [+] if it is some http proxy server-
+        [++] check whether http proxy server is reachable
+        [++] check whether known name server is reachable from that http proxy server
+
+2. Destination host prohibited
+
+    common-reason :
+    firewalls or iptables rules/services are activated which are preventing to packet forwarding
+
+3. Destination host not reachable
+
+    common-reason :
+    No route available on the source machine
+
+4. SSH “timed out waiting for input: auto-logout”
+
+    common-reason :
+    For a secured Linux system, normally there will be auto logout configured for SSH. It means if your SSH session has no activities for some time configured, the session will be disconnected. It’s a problem if you need to run some kind of interactive long-running progams because such programs need some inputs in between and you cannot run them at the background.
